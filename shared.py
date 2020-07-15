@@ -39,7 +39,9 @@ s_NETWORK_CONFIG = config_path("netconfig.json")
 
 # Config Defaults
 config_netconfigdefault = \
-  { "use_system_proxy" : True # bool
+  { "cx" : ""
+  , "api_key" : ""
+  , "use_system_proxy" : True # bool
   , "proxy_addr" : "http://127.0.0.1" # string
   , "proxy_port" : 1087 # int
   , "assign_https_context" : False # bool
@@ -55,14 +57,19 @@ config_mainconfig = None
 # Scrapping Defaults
 # string -> string
 def image_search_url(s_query):
-  s_search_url = "https://www.google.com/search"
+  config = config_netconfig
+  s_search_url = "https://customsearch.googleapis.com/customsearch/v1"
   d_s_params = \
-    { "authuser" : "0"
-    , "tbm" : "isch"
-    , "query" : s_query
+    { "cx" : config["cx"] # custom search engine ID
+    , "key" : config["api_key"] # API key
+    , "num" : "10" # results
+    , "searchType" : "image"
+    , "q" : s_query
     }
+  # TODO: handle missing config info
   return s_search_url + "?" + urlencode(d_s_params)
 
+# TODO: remove this
 # haoxuany - observed page format for Google Images
 s_GIMG_META_HEADER = r"\<div[^\>]*?class[^\>]*?rg_meta[^\>]*?\>"
 s_GIMG_META_FOOTER = r"\<\/div\>"
@@ -74,15 +81,11 @@ s_GIMG_META_URL_FIELD = u"ou"
 
 # string -> string list
 def scrape_image_urls(s_content):
-  l_s_meta = reobj_GIMG_META.findall(s_content)
+  results = json.loads(s_content)
   l_s_urls = []
-  for s_json_elem in l_s_meta:
-    try:
-      d_meta = json.loads(s_json_elem)
-      if s_GIMG_META_URL_FIELD in d_meta:
-        l_s_urls.append(d_meta[s_GIMG_META_URL_FIELD])
-    except json.JSONDecodeError:
-      pass
+  # TODO: handle diff response (e.g. no "items")
+  for item in results["items"]:
+    l_s_urls.append(item["link"])
   return l_s_urls
 
 ## Image Fetch Defaults
