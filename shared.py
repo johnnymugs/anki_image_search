@@ -172,6 +172,11 @@ Editor icons are provided by
 The entire project (Anki Image Search) is licensed under GPL version 2.
 ''' % s_GOOGLE_IMG
 
+s_API_KEY_HELP = \
+'''Instructions for getting an API key are here:
+<a href="https://github.com/haoxuany/anki_image_search">TODO</a>.
+'''
+
 s_SEARCH_IMAGE_SHORTCUT = "Ctrl+/"
 s_PREV_IMAGE_SHORTCUT = "Ctrl+Left"
 s_NEXT_IMAGE_SHORTCUT = "Ctrl+Right"
